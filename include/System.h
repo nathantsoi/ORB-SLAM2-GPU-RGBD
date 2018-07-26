@@ -37,6 +37,8 @@
 #include "Viewer.h"
 #include "Utils.hpp"
 
+#include "src/IMU/imudata.h"
+
 namespace ORB_SLAM2
 {
 
@@ -49,6 +51,10 @@ class LoopClosing;
 
 class System
 {
+public:
+    bool bLocalMapAcceptKF(void);
+    void SaveKeyFrameTrajectoryNavState(const string& filename);
+
 public:
     // Input sensor
     enum eSensor{

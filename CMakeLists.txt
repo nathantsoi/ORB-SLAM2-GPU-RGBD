@@ -54,6 +54,7 @@ ${Pangolin_INCLUDE_DIRS}
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY lib)
 
+
 cuda_include_directories(
   ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc
 )
@@ -82,6 +83,15 @@ src/cuda/Allocator_gpu.cu
 src/cuda/Fast_gpu.cu
 src/cuda/Orb_gpu.cu
 src/cuda/Cuda.cu
+
+src/IMU/configparam.cpp
+
+src/IMU/imudata.cpp
+src/IMU/IMUPreintegrator.cpp
+src/IMU/so3.cpp
+src/IMU/NavState.cpp
+
+src/IMU/g2otypes.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -90,6 +100,11 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+cholmod
+${CHOLMOD_LIBRARIES}
+${BLAS_LIBRARIES}
+${LAPACK_LIBRARIES}
+
 nvToolsExt
 )
 

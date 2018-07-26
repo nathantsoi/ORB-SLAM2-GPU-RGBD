@@ -35,6 +35,12 @@ class KeyFrame;
 class Map;
 class Frame;
 
+class cmpKeyFrameId{
+public:
+    bool operator() (const KeyFrame* a, const KeyFrame* b) const ;
+};
+
+typedef std::map<KeyFrame*,size_t,cmpKeyFrameId> mapMapPointObs;
 
 class MapPoint
 {
