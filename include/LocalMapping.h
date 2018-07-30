@@ -101,7 +101,7 @@ protected:
     void SetFlagCopyInitKFs(bool flag) { unique_lock<mutex> lock(mMutexCopyInitKFs); mbCopyInitKFs = flag; }
 
 public:
-    LocalMapping(Map* pMap, const float bMonocular);
+    LocalMapping(Map* pMap, const float bMonocular, ConfigParam* pParams);
 
     void SetLoopCloser(LoopClosing* pLoopCloser);
 

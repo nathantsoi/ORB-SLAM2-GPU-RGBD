@@ -44,7 +44,6 @@ class KeyFrameDatabase;
 
 class KeyFrame
 {
-
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -95,6 +94,7 @@ protected:
     std::mutex mMutexIMUData;
     std::vector<IMUData> mvIMUData;
     IMUPreintegrator mIMUPreInt;
+
 
 public:
     KeyFrame(Frame &F, Map* pMap, KeyFrameDatabase* pKFDB);
@@ -285,6 +285,7 @@ protected:
     std::mutex mMutexPose;
     std::mutex mMutexConnections;
     std::mutex mMutexFeatures;
+
 };
 
 } //namespace ORB_SLAM

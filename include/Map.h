@@ -48,7 +48,6 @@ public:
     void UpdateScale(const double &scale);
 
     //-----------------------------------------
-
 public:
     Map();
 
@@ -78,7 +77,7 @@ public:
 
 protected:
     std::set<MapPoint*> mspMapPoints;
-    std::set<KeyFrame*> mspKeyFrames;
+    std::set<KeyFrame*,KFIdComapre> mspKeyFrames;
 
     std::vector<MapPoint*> mvpReferenceMapPoints;
 

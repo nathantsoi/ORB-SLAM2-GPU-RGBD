@@ -55,7 +55,7 @@ void LoopClosing::SetMapUpdateFlagInTracking(bool bflag)
 LoopClosing::LoopClosing(Map *pMap, KeyFrameDatabase *pDB, ORBVocabulary *pVoc, const bool bFixScale, ConfigParam* pParams):
     mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
     mpKeyFrameDB(pDB), mpORBVocabulary(pVoc), mLastLoopKFid(0), mbRunningGBA(false), mbFinishedGBA(true),
-    mbStopGBA(false), mbFixScale(bFixScale)
+    mbStopGBA(false), mbFixScale(bFixScale), mnFullBAIdx(0)
 {
     mpParams = pParams;
     mnCovisibilityConsistencyTh = 3;
@@ -676,7 +676,10 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
 {
     cout << "Starting Global Bundle Adjustment" << endl;
 
-    Optimizer::GlobalBundleAdjustemnt(mpMap,20,&mbStopGBA,nLoopKF,false);
+    int idx =  mnFullBAIdx;
+    Optimizer::GlobalBundleAdjustmentNavStatePRV(mpMap,mpLocalMapper->GetGravityVec(),10,&mbStopGBA,nLoopKF,false);
+
+    //Optimizer::GlobalBundleAdjustemnt(mpMap,20,&mbStopGBA,nLoopKF,false);
 
     // Update all MapPoints and KeyFrames
     // Local Mapping was active during BA, that means that there might be new keyframes
@@ -698,6 +701,8 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
             {
                 usleep(1000);
             }
+
+            cv::Mat cvTbc = ConfigParam::GetMatTbc();
 
             // Get Map Mutex
             unique_lock<mutex> lock(mpMap->mMutexMapUpdate);

@@ -28,7 +28,6 @@ namespace ORB_SLAM2
 
 long unsigned int KeyFrame::nNextId=0;
 
-
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
@@ -229,7 +228,7 @@ void KeyFrame::ComputePreInt(void)
             // Test log
             if(dt < 0)
             {
-                cerr<<std::fixed<<std::setprecision(3)<<"dt = "<<dt<<", this KF vs last imu time: "<<mTimeStamp<<" vs "<<imu._t<<endl;
+                cerr<<std::fixed<<std::setprecision(3)<<"1 dt = "<<dt<<", prev KF vs last imu time: "<<mpPrevKeyFrame->mTimeStamp<<" vs "<<imu._t<<endl;
                 std::cerr.unsetf ( std::ios::showbase );                // deactivate showbase
             }
             // Debug log
@@ -263,6 +262,51 @@ void KeyFrame::ComputePreInt(void)
     }
     // Debug log
     //cout<<"pre-int delta time: "<<mIMUPreInt.getDeltaTime()<<", deltaR:"<<endl<<mIMUPreInt.getDeltaR()<<endl;
+}
+
+//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
+
+KeyFrame::KeyFrame(Frame &F, Map* pMap, KeyFrameDatabase* pKFDB, std::vector<IMUData> vIMUData, KeyFrame* pPrevKF):
+    mnFrameId(F.mnId),  mTimeStamp(F.mTimeStamp), mnGridCols(FRAME_GRID_COLS), mnGridRows(FRAME_GRID_ROWS),
+    mfGridElementWidthInv(F.mfGridElementWidthInv), mfGridElementHeightInv(F.mfGridElementHeightInv),
+    mnTrackReferenceForFrame(0), mnFuseTargetForKF(0), mnBALocalForKF(0), mnBAFixedForKF(0),
+    mnLoopQuery(0), mnLoopWords(0), mnRelocQuery(0), mnRelocWords(0), mnBAGlobalForKF(0),
+    fx(F.fx), fy(F.fy), cx(F.cx), cy(F.cy), invfx(F.invfx), invfy(F.invfy),
+    mbf(F.mbf), mb(F.mb), mThDepth(F.mThDepth), N(F.N), mvKeys(F.mvKeys), mvKeysUn(F.mvKeysUn),
+    mvuRight(F.mvuRight), mvDepth(F.mvDepth), mDescriptors(F.mDescriptors.clone()),
+    mBowVec(F.mBowVec), mFeatVec(F.mFeatVec), mnScaleLevels(F.mnScaleLevels), mfScaleFactor(F.mfScaleFactor),
+    mfLogScaleFactor(F.mfLogScaleFactor), mvScaleFactors(F.mvScaleFactors), mvLevelSigma2(F.mvLevelSigma2),
+    mvInvLevelSigma2(F.mvInvLevelSigma2), mnMinX(F.mnMinX), mnMinY(F.mnMinY), mnMaxX(F.mnMaxX),
+    mnMaxY(F.mnMaxY), mK(F.mK), mvpMapPoints(F.mvpMapPoints), mpKeyFrameDB(pKFDB),
+    mpORBvocabulary(F.mpORBvocabulary), mbFirstConnection(true), mpParent(NULL), mbNotErase(false),
+    mbToBeErased(false), mbBad(false), mHalfBaseline(F.mb/2), mpMap(pMap)
+{
+    mvIMUData = vIMUData;
+
+    //SetNavState(F.GetNavState());
+
+    if(pPrevKF)
+    {
+        pPrevKF->SetNextKeyFrame(this);
+    }
+    mpPrevKeyFrame = pPrevKF;
+    mpNextKeyFrame = NULL;
+
+    //---------------------------
+
+    mnId=nNextId++;
+
+    mGrid.resize(mnGridCols);
+    for(int i=0; i<mnGridCols;i++)
+    {
+        mGrid[i].resize(mnGridRows);
+        for(int j=0; j<mnGridRows; j++)
+            mGrid[i][j] = F.mGrid[i][j];
+    }
+
+    SetPose(F.mTcw);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -556,9 +600,9 @@ void KeyFrame::UpdateConnections()
         if(pMP->isBad())
             continue;
 
-        map<KeyFrame*,size_t> observations = pMP->GetObservations();
+        mapMapPointObs/*map<KeyFrame*,size_t>*/ observations = pMP->GetObservations();
 
-        for(map<KeyFrame*,size_t>::iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
+        for(mapMapPointObs/*map<KeyFrame*,size_t>*/::iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
         {
             if(mit->first->mnId==mnId)
                 continue;
@@ -710,7 +754,7 @@ void KeyFrame::SetBadFlag()
             mpMap->EraseKeyFrame(this);
         }
         mpKeyFrameDB->erase(this);
-        //cerr<<"KeyFrame "<<mnId<<" is already bad. Set bad return"<<endl;
+        cerr<<"KeyFrame "<<mnId<<" is already bad. Set bad return"<<endl;
         return;
     }
 
@@ -832,6 +876,9 @@ void KeyFrame::SetBadFlag()
 
     mpMap->EraseKeyFrame(this);
     mpKeyFrameDB->erase(this);
+
+    // Debug log
+    //cerr<<"KF set bad, id:"<<mnId<<", connect: "<<pPrevKF->mnId<<" and "<<pNextKF->mnId<<endl;
 }
 
 bool KeyFrame::isBad()

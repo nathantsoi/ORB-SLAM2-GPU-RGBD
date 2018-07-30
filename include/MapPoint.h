@@ -49,12 +49,13 @@ public:
     MapPoint(const cv::Mat &Pos,  Map* pMap, Frame* pFrame, const int &idxF);
 
     void SetWorldPos(const cv::Mat &Pos);
+    void UpdateScale(float scale);
     cv::Mat GetWorldPos();
 
     cv::Mat GetNormal();
     KeyFrame* GetReferenceKeyFrame();
 
-    std::map<KeyFrame*,size_t> GetObservations();
+    mapMapPointObs/*std::map<KeyFrame*,size_t>*/ GetObservations();
     int Observations();
 
     void AddObservation(KeyFrame* pKF,size_t idx);
@@ -84,7 +85,8 @@ public:
 
     float GetMinDistanceInvariance();
     float GetMaxDistanceInvariance();
-    int PredictScale(const float &currentDist, const float &logScaleFactor);
+    int PredictScale(const float &currentDist, KeyFrame*pKF);
+    int PredictScale(const float &currentDist, Frame* pF);
 
 public:
     long unsigned int mnId;
@@ -123,7 +125,7 @@ protected:
      cv::Mat mWorldPos;
 
      // Keyframes observing the point and associated index in keyframe
-     std::map<KeyFrame*,size_t> mObservations;
+     mapMapPointObs/*std::map<KeyFrame*,size_t,cmpMapPointId>*/ mObservations;
 
      // Mean viewing direction
      cv::Mat mNormalVector;

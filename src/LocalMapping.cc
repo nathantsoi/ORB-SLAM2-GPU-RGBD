@@ -1145,6 +1145,14 @@ void LocalMapping::InterruptBA()
 
 void LocalMapping::KeyFrameCulling()
 {
+
+    if(ConfigParam::GetRealTimeFlag())
+    {
+        if(GetFlagCopyInitKFs())
+            return;
+    }
+    SetFlagCopyInitKFs(true);
+
     // Check redundant keyframes (only local keyframes)
     // A keyframe is considered redundant if the 90% of the MapPoints it sees, are seen
     // in at least other 3 keyframes (in the same or finer scale)
@@ -1174,36 +1182,30 @@ void LocalMapping::KeyFrameCulling()
         // Note, the KF just out of Local is similarly considered as Local
         KeyFrame* pPrevKF = pKF->GetPrevKeyFrame();
         KeyFrame* pNextKF = pKF->GetNextKeyFrame();
+        if(pPrevKF && pNextKF && !GetVINSInited())
+        {
+            if(fabs(pNextKF->mTimeStamp - pPrevKF->mTimeStamp) > /*0.2*/0.5)
+                continue;
+        }
+        // Don't drop the KF before current KF
+        if(pKF->GetNextKeyFrame() == mpCurrentKeyFrame)
+            continue;
+        if(pKF->mTimeStamp >= mpCurrentKeyFrame->mTimeStamp - 0.11)
+            continue;
+
         if(pPrevKF && pNextKF)
         {
-            double timegap=0.5;
-            if(GetVINSInited())
-                timegap = 3;
+            double timegap=0.51;
+            if(GetVINSInited() && pKF->mTimeStamp < mpCurrentKeyFrame->mTimeStamp - 4.0)
+                timegap = 3.01;
 
-            // Test log
-            if(pOldestLocalKF->isBad()) cerr<<"pOldestLocalKF is bad, check 1. id: "<<pOldestLocalKF->mnId<<endl;
-            if(pPrevLocalKF) if(pPrevLocalKF->isBad()) cerr<<"pPrevLocalKF is bad, check 1. id: "<<pPrevLocalKF->mnId<<endl;
-            if(pNewestLocalKF->isBad()) cerr<<"pNewestLocalKF is bad, check 1. id: "<<pNewestLocalKF->mnId<<endl;
-
-            if(pKF->mnId >= pOldestLocalKF->mnId)
-            {
-                timegap = 0.1;    // third tested, good
-                if(GetVINSInited())
-                    timegap = 0.5;
-                // Test log
-                if(pKF->mnId >= pNewestLocalKF->mnId)
-                    cerr<<"Want to cull Newer KF than LocalWindow? id/currentKFid:"<<pKF->mnId<<"/"<<mpCurrentKeyFrame->mnId<<endl;
-            }
             if(fabs(pNextKF->mTimeStamp - pPrevKF->mTimeStamp) > timegap)
                 continue;
         }
 
-
         const vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
 
-        int /*nObs = 2;
-        if(mbMonocular)*/
-            nObs = 3;
+        int nObs = 3;
         const int thObs=nObs;
         int nRedundantObservations=0;
         int nMPs=0;
@@ -1224,9 +1226,9 @@ void LocalMapping::KeyFrameCulling()
                     if(pMP->Observations()>thObs)
                     {
                         const int &scaleLevel = pKF->mvKeysUn[i].octave;
-                        const map<KeyFrame*, size_t> observations = pMP->GetObservations();
+                        const mapMapPointObs/*map<KeyFrame*, size_t>*/ observations = pMP->GetObservations();
                         int nObs=0;
-                        for(map<KeyFrame*, size_t>::const_iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
+                        for(mapMapPointObs/*map<KeyFrame*, size_t>*/::const_iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
                         {
                             KeyFrame* pKFi = mit->first;
                             if(pKFi==pKF)
@@ -1252,6 +1254,8 @@ void LocalMapping::KeyFrameCulling()
         if(nRedundantObservations>0.9*nMPs)
             pKF->SetBadFlag();
     }
+
+    SetFlagCopyInitKFs(false);
 }
 
 cv::Mat LocalMapping::SkewSymmetricMatrix(const cv::Mat &v)

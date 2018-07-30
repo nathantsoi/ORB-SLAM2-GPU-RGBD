@@ -63,7 +63,7 @@ public:
 
 public:
 
-    LoopClosing(Map* pMap, KeyFrameDatabase* pDB, ORBVocabulary* pVoc,const bool bFixScale);
+    LoopClosing(Map* pMap, KeyFrameDatabase* pDB, ORBVocabulary* pVoc,const bool bFixScale, ConfigParam *pParams);
 
     void SetTracker(Tracking* pTracker);
 
@@ -151,6 +151,8 @@ protected:
 
     // Fix scale in the stereo/RGB-D case
     bool mbFixScale;
+
+    bool mnFullBAIdx;
 };
 
 } //namespace ORB_SLAM

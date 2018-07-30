@@ -47,7 +47,7 @@ class KeyFrame;
 class Frame
 {
 public:
-    //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     // Constructor for Monocular VI
     Frame(const cv::Mat &imGray, const double &timeStamp, const std::vector<IMUData> &vimu, ORBextractor* extractor,ORBVocabulary* voc,
@@ -73,7 +73,6 @@ protected:
     NavState mNavState;
 
 public:
-
     Frame();
 
     // Copy constructor.
@@ -217,7 +216,6 @@ public:
     static float mnMaxY;
 
     static bool mbInitialComputations;
-
 
 private:
 

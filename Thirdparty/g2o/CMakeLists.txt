@@ -58,8 +58,8 @@ IF(OPENMP_FOUND AND G2O_USE_OPENMP)
 ENDIF(OPENMP_FOUND AND G2O_USE_OPENMP)
 
 # Compiler specific options for gcc
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3") 
-SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3") 
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native") 
+SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native") 
 
 # activate warnings !!!
 SET(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall -W")
@@ -163,6 +163,8 @@ g2o/core/robust_kernel_factory.cpp
 g2o/core/robust_kernel_factory.h
 g2o/core/robust_kernel_impl.cpp 
 g2o/core/robust_kernel_impl.h
+g2o/core/optimization_algorithm_gauss_newton.cpp 
+g2o/core/optimization_algorithm_gauss_newton.h
 #stuff
 g2o/stuff/string_tools.h
 g2o/stuff/color_macros.h 
@@ -175,4 +177,12 @@ g2o/stuff/os_specific.h
 g2o/stuff/string_tools.cpp
 g2o/stuff/property.cpp       
 g2o/stuff/property.h       
+
+#added
+g2o/stuff/sparse_helper.cpp
+g2o/stuff/sparse_helper.h
+g2o/solvers/linear_solver_cholmod.h
+g2o/solvers/linear_solver_eigen.h
+g2o/solvers/linear_solver_dense.h
+
 )
