@@ -114,26 +114,27 @@ nvToolsExt
 if(NO_EXAMPLES)
 message(STATUS "Don't build examples")
 
-add_executable(csi_camera gpu/csi_camera.cc)
-target_link_libraries(csi_camera ${PROJECT_NAME})
 
 else ()
 message(STATUS "Build examples")
 
-add_executable(rgbd_tum Examples/RGB-D/rgbd_tum.cc)
-target_link_libraries(rgbd_tum ${PROJECT_NAME})
+add_executable(vi_test Examples/Monocular/vi_test.cc)
+target_link_libraries(vi_test ${PROJECT_NAME})
 
-add_executable(stereo_kitti Examples/Stereo/stereo_kitti.cc)
-target_link_libraries(stereo_kitti ${PROJECT_NAME})
+#add_executable(rgbd_tum Examples/RGB-D/rgbd_tum.cc)
+#target_link_libraries(rgbd_tum ${PROJECT_NAME})
 
-add_executable(mono_tum Examples/Monocular/mono_tum.cc)
-target_link_libraries(mono_tum ${PROJECT_NAME})
+#add_executable(stereo_kitti Examples/Stereo/stereo_kitti.cc)
+#target_link_libraries(stereo_kitti ${PROJECT_NAME})
 
-add_executable(mono_kitti Examples/Monocular/mono_kitti.cc)
-target_link_libraries(mono_kitti ${PROJECT_NAME})
+#add_executable(mono_tum Examples/Monocular/mono_tum.cc)
+#target_link_libraries(mono_tum ${PROJECT_NAME})
 
-add_executable(csi_camera gpu/csi_camera.cc)
-target_link_libraries(csi_camera ${PROJECT_NAME})
+#add_executable(mono_kitti Examples/Monocular/mono_kitti.cc)
+#target_link_libraries(mono_kitti ${PROJECT_NAME})
+
+#add_executable(csi_camera gpu/csi_camera.cc)
+#target_link_libraries(csi_camera ${PROJECT_NAME})
 
 endif() # Build Examples
 
