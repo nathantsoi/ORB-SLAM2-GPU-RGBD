@@ -41,8 +41,11 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-find_package(OpenCV 3.1.0 REQUIRED)
-find_package(Eigen3 3.1.0 REQUIRED)
+find_package(OpenCV REQUIRED
+NO_MODULE # should be optional, tells CMake to use config mode
+PATHS /usr/local # look here
+NO_DEFAULT_PATH) # and don't look anywhere else
+find_package(Eigen3 REQUIRED)
 find_package(Pangolin REQUIRED)
 #find_package(Cholmod REQUIRED)
 

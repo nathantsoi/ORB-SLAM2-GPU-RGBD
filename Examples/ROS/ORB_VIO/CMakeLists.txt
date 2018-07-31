@@ -37,7 +37,7 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../../cmake_modules)
 
-find_package(OpenCV REQUIRED
+find_package(OpenCV 3.4.1 REQUIRED
 NO_MODULE # should be optional, tells CMake to use config mode
 PATHS /usr/local # look here
 NO_DEFAULT_PATH) # and don't look anywhere else
