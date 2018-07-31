@@ -52,6 +52,9 @@ ${PROJECT_SOURCE_DIR}/../../../include
 ${Pangolin_INCLUDE_DIRS}
 )
 
+message(STATUS ${OpenCV_INCLUDE_DIRS})
+message(STATUS ${OpenCV_LIBS})
+
 set(LIBS 
 ${OpenCV_LIBS} 
 ${CUDA_LIBRARIES}
