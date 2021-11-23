@@ -15,6 +15,7 @@ include(FindOpenMP)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} -Wall  -O3 ") #-march=native ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall  -O3") # -march=native")
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 14)
 
 # Check C++11 or C++0x support
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -25,10 +26,12 @@ message(STATUS "Using flag -std=c++11.")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../../cmake_modules)
 
-find_package(OpenCV 3.4.1 REQUIRED
-NO_MODULE 
-PATHS /usr/local
-NO_DEFAULT_PATH) #make sure not doesn't link to ROS OpenCV version
+set (OpenCV_DIR $ENV{OpenCV_DIR})
+find_package(OpenCV 3.4.5 REQUIRED)
+#find_package(OpenCV 3.4.5 REQUIRED
+#NO_MODULE 
+#PATHS /usr/local
+#NO_DEFAULT_PATH)
 find_package(Eigen3 REQUIRED)
 find_package(Pangolin REQUIRED)
 
@@ -42,11 +45,11 @@ LIST(APPEND CUDA_NVCC_FLAGS "--compiler-options -fno-strict-aliasing -use_fast_m
 
 
 include_directories(
+${EIGEN3_INCLUDE_DIR}
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/../../../
 ${PROJECT_SOURCE_DIR}/../../../include
 ${Pangolin_INCLUDE_DIRS}
-/usr/local/lib/librealsense2.so
 nvToolsExt
 )
 
@@ -81,8 +84,7 @@ cuda_add_library(${PROJECT_NAME} SHARED
 )
 
 set(LIBS 
-
-${OpenCV_LIBS} 
+${OpenCV_LIBS}
 ${CUDA_LIBRARIES}
 ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
@@ -90,7 +92,7 @@ ${PROJECT_SOURCE_DIR}/../../../Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/g2o/lib/libg2o.so
 ${PROJECT_SOURCE_DIR}/../../../build/lib/libORB_SLAM2.so
 -lboost_system
-realsense2
+/usr/local/lib/librealsense2.so
 )
 
 # Csi camera publishing 
